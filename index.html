@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leyton Orient – Path to Safety</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --orient: #E8352A;
+    --bg:     #F7F5F0;
+    --surface: #FFFFFF;
+    --border: #E2DDD6;
+    --text:   #1A1714;
+    --muted:  #7A746C;
+    --green-bg: #D4EDDA; --green-txt: #1A5C2A;
+    --blue-bg:  #CCE3F5; --blue-txt:  #0C3D6B;
+    --red-bg:   #FAD9D7; --red-txt:   #7A1A16;
+    --cell-size: 38px;
+  }
+
+  @media (max-width: 480px) {
+    :root { --cell-size: 28px; }
+  }
+
+  html, body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    min-height: 100vh;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 820px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  header { display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; }
+
+  .badge {
+    background: var(--orient);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  h1 { font-size: clamp(1rem, 3.5vw, 1.3rem); font-weight: 600; letter-spacing: -0.02em; }
+  h1 span { color: var(--orient); }
+  .subtitle { font-size: 0.75rem; color: var(--muted); margin-top: 1px; }
+
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+  }
+
+  @media (max-width: 400px) {
+    .controls { grid-template-columns: 1fr; }
+  }
+
+  .ctrl {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.55rem 0.85rem;
+    transition: border-color 0.15s;
+  }
+
+  .ctrl:focus-within { border-color: var(--orient); }
+
+  .ctrl label {
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+
+  .ctrl-row { display: flex; align-items: center; gap: 8px; }
+
+  .ctrl input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    min-width: 0;
+  }
+
+  .ctrl input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--orient);
+    cursor: pointer;
+  }
+
+  .ctrl-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 1rem;
+    font-weight: 500;
+    min-width: 26px;
+    text-align: right;
+  }
+
+  .stats-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .stats { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.35rem 0.75rem;
+    min-width: 80px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 1px;
+  }
+
+  .stat-val { font-family: 'DM Mono', monospace; font-size: 1.1rem; font-weight: 500; }
+  .stat-val.good { color: var(--green-txt); }
+  .stat-val.warn { color: #8B5E00; }
+  .stat-val.bad  { color: var(--orient); }
+
+  .legend { display: flex; flex-direction: column; gap: 0.3rem; font-size: 12px; color: var(--muted); }
+  .leg { display: flex; align-items: center; gap: 5px; }
+  .leg-dot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+
+  .wins-draws-wrap { display: flex; align-items: flex-start; gap: 0; margin-top: 0.5rem; }
+
+  .wins-col {
+    display: flex; flex-direction: column; align-items: center;
+    margin-right: 4px;
+  }
+  .wins-col span {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--muted); font-weight: 500; white-space: nowrap;
+    writing-mode: vertical-rl; transform: rotate(180deg); margin-bottom: 4px;
+  }
+  .wins-col .axis-line-v {
+    width: 1px; height: var(--cell-size); background: var(--muted); position: relative; flex-shrink: 0;
+  }
+  .wins-col .axis-line-v::after {
+    content: ''; position: absolute; bottom: -1px; left: -2px;
+    border-top: 5px solid var(--muted);
+    border-left: 3px solid transparent; border-right: 3px solid transparent;
+  }
+
+  .grid-col { display: flex; flex-direction: column; }
+  .draws-axis { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; margin-left: 4px; }
+  .draws-axis span {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--muted); font-weight: 500; white-space: nowrap;
+  }
+  .draws-axis .axis-line {
+    width: var(--cell-size); height: 1px; background: var(--muted); position: relative; flex-shrink: 0;
+  }
+  .draws-axis .axis-line::after {
+    content: ''; position: absolute; right: -1px; top: -2px;
+    border-left: 5px solid var(--muted);
+    border-top: 3px solid transparent; border-bottom: 3px solid transparent;
+  }
+
+  .grid-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  table {
+    border-collapse: separate;
+    border-spacing: 2px;
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(10px, 2.5vw, 14px);
+  }
+
+  th.corner, th.col-hdr, td.row-hdr {
+    width: var(--cell-size); height: var(--cell-size);
+    background: var(--text); color: #fff;
+    border-radius: 4px;
+    text-align: center; vertical-align: middle; font-weight: 500;
+  }
+
+  th.corner { font-family: 'DM Sans', sans-serif; font-size: 9px; }
+
+  td.cell {
+    width: var(--cell-size); height: var(--cell-size);
+    border-radius: 4px;
+    text-align: center; vertical-align: middle;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  td.cell.green { background: var(--green-bg); color: var(--green-txt); }
+  td.cell.blue  { background: var(--blue-bg);  color: var(--blue-txt); font-weight: 500; }
+  td.cell.red   { background: var(--red-bg);   color: var(--red-txt); }
+  td.cell.empty { background: transparent; }
+
+  .impossible { font-size: 11px; color: var(--orient); font-weight: 500; margin-top: 0.25rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="badge">LEAGUE ONE</div>
+    <div>
+      <h1>Leyton <span>Orient</span> final points – path to safety</h1>
+      <p class="subtitle">Adjust the inputs to explore win/draw combinations</p>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="ctrl">
+      <label>Current points</label>
+      <div class="ctrl-row">
+        <input type="range" id="current" min="0" max="100" value="45" step="1" oninput="update()">
+        <span class="ctrl-val" id="current-val">42</span>
+      </div>
+    </div>
+    <div class="ctrl">
+      <label>Target points</label>
+      <div class="ctrl-row">
+        <input type="range" id="target" min="0" max="100" value="52" step="1" oninput="update()">
+        <span class="ctrl-val" id="target-val">52</span>
+      </div>
+    </div>
+    <div class="ctrl">
+      <label>Games remaining</label>
+      <div class="ctrl-row">
+        <input type="range" id="games" min="1" max="9" value="9" step="1" oninput="update()">
+        <span class="ctrl-val" id="games-val">10</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stats" id="stats"></div>
+    <div class="legend">
+      <div class="leg"><div class="leg-dot" style="background:var(--green-bg);border:1px solid #9DD4AC;"></div>Above target</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--blue-bg);border:1px solid #7BB8E8;"></div>Exact minimum path</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--red-bg);border:1px solid #F0A8A4;"></div>Short of target</div>
+    </div>
+  </div>
+
+  <div class="wins-draws-wrap">
+    <div class="wins-col">
+      <span>Wins</span>
+      <div class="axis-line-v"></div>
+    </div>
+    <div class="grid-col">
+      <div class="draws-axis">
+        <span>Draws</span>
+        <div class="axis-line"></div>
+      </div>
+      <div class="grid-wrap">
+        <table id="grid"></table>
+      </div>
+    </div>
+  </div>
+
+  <div id="impossible" class="impossible" style="display:none;">Target not reachable in remaining games.</div>
+
+</div>
+
+<script>
+function update() {
+  const cur   = parseInt(document.getElementById('current').value);
+  const tgt   = parseInt(document.getElementById('target').value);
+  const games = parseInt(document.getElementById('games').value);
+  document.getElementById('current-val').textContent = cur;
+  document.getElementById('target-val').textContent  = tgt;
+  document.getElementById('games-val').textContent   = games;
+
+  const need       = tgt - cur;
+  const maxPts     = cur + games * 3;
+  const impossible = need > games * 3;
+
+  document.getElementById('impossible').style.display = impossible ? 'block' : 'none';
+
+  const statsEl = document.getElementById('stats');
+  const needClass = need <= 0 ? 'good' : impossible ? 'bad' : need <= games ? 'warn' : 'bad';
+  statsEl.innerHTML = `
+    <div class="stat"><div class="stat-label">Points needed</div><div class="stat-val ${needClass}">${Math.max(need,0)}</div></div>
+    <div class="stat"><div class="stat-label">Max possible</div><div class="stat-val">${maxPts}</div></div>
+    <div class="stat"><div class="stat-label">Already safe</div><div class="stat-val ${need<=0?'good':'bad'}">${need<=0?'Yes':'No'}</div></div>
+  `;
+
+  const tbl = document.getElementById('grid');
+  let html = '<thead><tr><th class="corner">W \\ D</th>';
+  for (let d = 0; d <= games; d++) html += `<th class="col-hdr">${d}</th>`;
+  html += '</tr></thead><tbody>';
+
+  for (let w = 0; w <= games; w++) {
+    html += `<tr><td class="row-hdr">${w}</td>`;
+    for (let d = 0; d <= games; d++) {
+      if (w + d > games) {
+        html += `<td class="cell empty"></td>`;
+      } else {
+        const total = cur + w * 3 + d;
+        let cls = total >= tgt ? 'green' : 'red';
+        if (total >= tgt) {
+          const isExact = (w > 0 && total - 3 < tgt) || (d > 0 && total - 1 < tgt);
+          if (isExact) cls = 'blue';
+        }
+        html += `<td class="cell ${cls}">${total}</td>`;
+      }
+    }
+    html += '</tr>';
+  }
+  html += '</tbody>';
+  tbl.innerHTML = html;
+  requestAnimationFrame(() => requestAnimationFrame(alignWins));
+}
+
+function alignWins() {
+  const drawsAxis = document.querySelector('.draws-axis');
+  const winsCol   = document.querySelector('.wins-col');
+  const wrap      = document.querySelector('.wins-draws-wrap');
+  if (!drawsAxis || !winsCol || !wrap) return;
+  const drawsBottom = drawsAxis.getBoundingClientRect().bottom;
+  const wrapTop     = wrap.getBoundingClientRect().top;
+  winsCol.style.marginTop = (drawsBottom - wrapTop + 6) + 'px';
+}
+
+update();
+requestAnimationFrame(() => requestAnimationFrame(alignWins));
+</script>
+</body>
+</html>
