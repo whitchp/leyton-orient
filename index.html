@@ -18,11 +18,13 @@
     --green-bg: #D4EDDA; --green-txt: #1A5C2A;
     --blue-bg:  #CCE3F5; --blue-txt:  #0C3D6B;
     --red-bg:   #FAD9D7; --red-txt:   #7A1A16;
-    --cell-size: 38px;
+    --cell-size: 42px;
   }
 
-  @media (max-width: 480px) {
-    :root { --cell-size: 28px; }
+  @media (max-width: 600px) {
+    :root { --cell-size: 26px; }
+    table { font-size: 11px; }
+    th.corner { font-size: 8px; }
   }
 
   html, body {
@@ -71,15 +73,27 @@
     gap: 0.35rem;
   }
 
-  @media (max-width: 400px) {
+  @media (max-width: 600px) {
     .controls { grid-template-columns: 1fr; }
+    .ctrl { padding: 0.3rem 0.7rem; }
+    .ctrl label { margin-bottom: 0.15rem; }
+    .container { gap: 0.3rem; }
+    .stats-row { flex-direction: row; flex-wrap: wrap; }
+    .legend { flex-direction: row; flex-wrap: wrap; gap: 0.4rem; font-size: 11px; }
+    body { padding: 0.6rem; }
+    h1 { font-size: 0.95rem; }
+    .subtitle { display: none; }
+    .badge { font-size: 9px; padding: 2px 6px; }
+    .stat { padding: 0.25rem 0.5rem; min-width: 70px; }
+    .stat-val { font-size: 0.95rem; }
+    .wins-draws-wrap { margin-top: 0.25rem; }
   }
 
   .ctrl {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 0.55rem 0.85rem;
+    padding: 0.35rem 0.75rem;
     transition: border-color 0.15s;
   }
 
@@ -92,7 +106,7 @@
     letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.15rem;
   }
 
   .ctrl-row { display: flex; align-items: center; gap: 8px; }
@@ -235,7 +249,7 @@
     <div class="ctrl">
       <label>Current points</label>
       <div class="ctrl-row">
-        <input type="range" id="current" min="0" max="100" value="45" step="1" oninput="update()">
+        <input type="range" id="current" min="0" max="100" value="42" step="1" oninput="update()">
         <span class="ctrl-val" id="current-val">42</span>
       </div>
     </div>
@@ -249,7 +263,7 @@
     <div class="ctrl">
       <label>Games remaining</label>
       <div class="ctrl-row">
-        <input type="range" id="games" min="1" max="9" value="9" step="1" oninput="update()">
+        <input type="range" id="games" min="1" max="10" value="10" step="1" oninput="update()">
         <span class="ctrl-val" id="games-val">10</span>
       </div>
     </div>
