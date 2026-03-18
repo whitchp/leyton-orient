@@ -217,7 +217,7 @@
     text-align: center; vertical-align: middle; font-weight: 500;
   }
 
-  th.corner { font-family: 'DM Sans', sans-serif; font-size: 12px; }
+  th.corner { font-family: 'DM Sans', sans-serif; font-size: clamp(10px, 2.5vw, 15px); }
 
   td.cell {
     width: var(--cell-size); height: var(--cell-size);
@@ -250,7 +250,7 @@
       <label>Current points</label>
       <div class="ctrl-row">
         <input type="range" id="current" min="0" max="100" value="45" step="1" oninput="update()">
-        <span class="ctrl-val" id="current-val">42</span>
+        <span class="ctrl-val" id="current-val">45</span>
       </div>
     </div>
     <div class="ctrl">
@@ -264,7 +264,7 @@
       <label>Games remaining</label>
       <div class="ctrl-row">
         <input type="range" id="games" min="1" max="9" value="9" step="1" oninput="update()">
-        <span class="ctrl-val" id="games-val">10</span>
+        <span class="ctrl-val" id="games-val">9</span>
       </div>
     </div>
   </div>
